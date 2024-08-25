@@ -1,9 +1,9 @@
 #include "cbl/io/file.h"
-#include "cbl/primitives.h"
 
-#include <cassert>  // assert
-#include <cstdio>   // FILE, stdout, stderr, stdin, fwrite, vfprintf
-#include <unistd.h> // dup
+#include "cbl/primitives.h" // usize, const_cstr
+#include <cassert>          // assert
+#include <cstdio>           // FILE, stdout, stderr, stdin, fwrite, vfprintf
+#include <unistd.h>         // dup
 
 namespace cbl::io {
 
@@ -35,9 +35,9 @@ auto File::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
   assert(written != 0);
 }
 
-auto File::file() const -> std::FILE* { return this->_file; }
+auto File::file() const noexcept -> std::FILE* { return this->_file; }
 
-auto File::clone() const -> File {
+auto File::clone() const noexcept -> File {
   FILE* copied_file =
       fdopen(dup(fileno(this->_file)), getFileMode(this->_mode));
   return File{copied_file};
@@ -59,6 +59,28 @@ auto File::getFileMode(Mode mode) -> const_cstr {
   default:
     return "r";
   }
+}
+
+[[nodiscard]] auto Stdout::write(Slice<u8> buf) noexcept -> usize {
+  assert(!buf.isEmpty());
+  return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stdout);
+}
+
+auto Stdout::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
+  assert(fmt != nullptr);
+  usize written = std::vfprintf(stdout, fmt, args);
+  assert(written != 0);
+}
+
+[[nodiscard]] auto Stderr::write(Slice<u8> buf) noexcept -> usize {
+  assert(!buf.isEmpty());
+  return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stderr);
+}
+
+auto Stderr::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
+  assert(fmt != nullptr);
+  usize written = std::vfprintf(stderr, fmt, args);
+  assert(written != 0);
 }
 
 } // namespace cbl::io

@@ -41,10 +41,10 @@ public:
   auto formatV(const_cstr fmt, std::va_list args) noexcept -> void override;
 
   /// Returns the raw `FILE*`.
-  auto file() const -> std::FILE*;
+  auto file() const noexcept -> std::FILE*;
 
   /// Clones the file.
-  auto clone() const -> File;
+  auto clone() const noexcept -> File;
 
 private:
   std::FILE*  _file = nullptr;
@@ -53,6 +53,40 @@ private:
   /// Get the file mode as a C-string.
   static auto getFileMode(Mode mode) -> const_cstr;
 };
+
+/// Safe representation of `stdout`.
+struct Stdout : public Writer {
+  explicit Stdout() noexcept                = default;
+  Stdout(Stdout&&) noexcept                 = default;
+  Stdout(const Stdout&) noexcept            = default;
+  Stdout& operator=(Stdout&&) noexcept      = default;
+  Stdout& operator=(const Stdout&) noexcept = default;
+
+public:
+  /// Writes the buffer to `stdout`, returning the number of bytes written.
+  [[nodiscard]] auto write(Slice<u8> buf) noexcept -> usize override;
+
+  /// Writes a formatted string into `stdout`.
+  auto formatV(const_cstr fmt, std::va_list args) noexcept -> void override;
+};
+
+/// Safe representation of `stderr`.
+struct Stderr : public Writer {
+  explicit Stderr() noexcept                = default;
+  Stderr(Stderr&&) noexcept                 = default;
+  Stderr(const Stderr&) noexcept            = default;
+  Stderr& operator=(Stderr&&) noexcept      = default;
+  Stderr& operator=(const Stderr&) noexcept = default;
+
+public:
+  /// Writes the buffer to `stderr`, returning the number of bytes written.
+  [[nodiscard]] auto write(Slice<u8> buf) noexcept -> usize override;
+
+  /// Writes a formatted string into `stderr`.
+  auto formatV(const_cstr fmt, std::va_list args) noexcept -> void override;
+};
+
+// TODO: Add Stdin that implements Reader
 
 } // namespace cbl::io
 
