@@ -3,6 +3,7 @@
 
 #include "cbl/io/writer.h"  // Writer
 #include "cbl/primitives.h" // const_cstr
+#include <cstdarg>          // va_list
 #include <cstdio>           // FILE
 
 namespace cbl::io {
@@ -30,11 +31,24 @@ public:
   /// Create/open the file with `filename` in the specified mode.
   explicit File(const_cstr filename, Mode mode) noexcept;
 
+  /// Cleanup resources used by `File`.
   ~File() noexcept;
 
+  /// Writes the buffer into the file, returning the number of bytes written.
+  [[nodiscard]] auto write(Slice<u8> buf) noexcept -> usize override;
+
+  /// Writes a formatted string into the file.
+  auto formatV(const_cstr fmt, std::va_list args) noexcept -> void override;
+
+  /// Returns the raw `FILE*`.
+  auto file() const -> std::FILE*;
+
+  /// Clones the file.
+  auto clone() const -> File;
+
 private:
-  std::FILE*  file = nullptr;
-  Mode        mode = Mode::Read;
+  std::FILE*  _file = nullptr;
+  Mode        _mode = Mode::Read;
 
   /// Get the file mode as a C-string.
   static auto getFileMode(Mode mode) -> const_cstr;
