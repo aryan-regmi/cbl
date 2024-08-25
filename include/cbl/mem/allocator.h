@@ -17,9 +17,9 @@ namespace cbl::mem {
 struct Allocator {
   explicit Allocator() noexcept                   = default;
   Allocator(Allocator&&) noexcept                 = default;
-  Allocator(const Allocator&) noexcept            = delete;
+  Allocator(const Allocator&) noexcept            = default;
   Allocator& operator=(Allocator&&) noexcept      = default;
-  Allocator& operator=(const Allocator&) noexcept = delete;
+  Allocator& operator=(const Allocator&) noexcept = default;
   virtual ~Allocator() noexcept                   = default;
 
 public:
