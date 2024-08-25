@@ -11,6 +11,7 @@ namespace cbl {
 /// Slices are a view into a block of memory represented as a pointer and a
 /// length.
 template <class T> struct Slice {
+  /// Creates an empty slice.
   explicit Slice() noexcept               = default;
   Slice(Slice&&) noexcept                 = default;
   Slice(const Slice&) noexcept            = default;
@@ -28,7 +29,7 @@ public:
   }
 
   /// Returns the pointer to the underlying contiguous sequence.
-  auto ptr() const noexcept -> usize { return this->_ptr; }
+  auto ptr() const noexcept -> T* { return this->_ptr; }
 
   /// Returns the number of elements in the sequence.
   auto len() const noexcept -> usize { return this->_len; };
