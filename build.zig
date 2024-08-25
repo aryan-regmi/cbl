@@ -12,12 +12,14 @@ fn debugFlags(allocator: std.mem.Allocator, extra_opts: ?[]const []const u8) !st
     var flags = std.ArrayList([]const u8).initCapacity(allocator, 10) catch unreachable;
     try flags.append("-std=c++20");
     try flags.append("-W");
+    try flags.append("-Wall");
     try flags.append("-Werror");
     try flags.append("-Wpedantic");
     try flags.append("-Wstrict-prototypes");
     try flags.append("-Wwrite-strings");
     try flags.append("-Wno-missing-field-initializers");
     try flags.append("-Wno-bit-int-extension");
+    try flags.append("-fsanitize=undefined");
     if (extra_opts != null) {
         for (extra_opts.?) |opt| {
             try flags.append(opt);

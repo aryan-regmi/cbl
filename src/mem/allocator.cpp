@@ -13,6 +13,7 @@ auto Allocator::allocateZeroed(Layout layout) noexcept -> Slice<u8> {
     return Slice<u8>{};
   }
   void* zeroed = std::memset(mem.ptr(), 0, layout.size());
+  assert(zeroed != nullptr);
   return Slice<u8>{mem.ptr(), layout.size()};
 }
 

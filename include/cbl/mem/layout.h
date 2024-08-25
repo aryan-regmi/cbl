@@ -62,6 +62,7 @@ public:
     assert(isPowerOf2(alignof(T)));
     usize final_size;
     bool  invalid = ckd_mul(&final_size, sizeof(T), len);
+    assert(invalid == false);
     return Layout{final_size, alignof(T)};
   }
 
