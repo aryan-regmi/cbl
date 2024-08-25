@@ -2,6 +2,7 @@ const std = @import("std");
 const genCompileCommands = @import("build/gen_compile_commands.zig").genCompileCommandsFile;
 
 pub const source_files = [_][]const u8{
+    "src/mem/allocator.cpp",
     "src/mem/layout.cpp",
 };
 
