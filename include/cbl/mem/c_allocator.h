@@ -2,6 +2,8 @@
 #define CBL_MEM_C_ALLOCATOR_H
 
 #include "cbl/mem/allocator.h" // Allocator
+#include "cbl/primitives.h"    // u8
+#include "cbl/slice.h"         // Slice
 
 namespace cbl::mem {
 
@@ -16,10 +18,10 @@ struct CAllocator : public Allocator {
 
 public:
   /// Allocates memory using `malloc`.
-  Slice<u8> allocate(Layout layout) noexcept override;
+  auto allocate(Layout layout) noexcept -> Slice<u8> override;
 
   /// Deallocates memory using `free`.
-  void      deallocate(u8* ptr, Layout layout) noexcept override;
+  auto deallocate(u8* ptr, Layout layout) noexcept -> void override;
 };
 
 } // namespace cbl::mem
