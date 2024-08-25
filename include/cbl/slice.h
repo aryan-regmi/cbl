@@ -41,7 +41,8 @@ public:
   /// The `idx` must be less than the slice's length.
   auto getPtr(usize idx) const noexcept -> const T* {
     assert(idx < this->_len);
-    return reinterpret_cast<u8*>(this->_ptr) + (idx * sizeof(T));
+    return reinterpret_cast<T*>(reinterpret_cast<u8*>(this->_ptr) +
+                                (idx * sizeof(T)));
   }
 
   /// Gets a mutable pointer to the value of the slice at `idx`.
@@ -51,7 +52,8 @@ public:
   /// The `idx` must be less than the slice's length.
   auto getPtrMut(usize idx) noexcept -> T* {
     assert(idx < this->_len);
-    return reinterpret_cast<u8*>(this->_ptr) + (idx * sizeof(T));
+    return reinterpret_cast<T*>(reinterpret_cast<u8*>(this->_ptr) +
+                                (idx * sizeof(T)));
   }
 
   /// Returns a const reference to the value at `idx`.
@@ -61,7 +63,9 @@ public:
   auto operator[](usize idx) noexcept -> T& { return *getPtrMut(idx); }
 
   /// Returns the slice as a `U*`.
-  template <class U> auto as() -> U* { return static_cast<U*>(this->_ptr); }
+  template <class U> auto as() -> U* {
+    return reinterpret_cast<U*>(this->_ptr);
+  }
 
 private:
   T*    _ptr = 0;

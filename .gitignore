@@ -1,4 +1,4 @@
 .cache/clangd/index
 .zig-cache
-build/compile_commands.json
+build/*.json
 zig-out
