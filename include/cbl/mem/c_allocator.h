@@ -12,7 +12,7 @@ struct CAllocator : public Allocator {
   CAllocator(const CAllocator&) noexcept            = default;
   CAllocator& operator=(CAllocator&&) noexcept      = default;
   CAllocator& operator=(const CAllocator&) noexcept = default;
-  virtual ~CAllocator() noexcept                    = default;
+  ~CAllocator() noexcept                            = default;
 
 public:
   /// Allocates memory using `malloc`.

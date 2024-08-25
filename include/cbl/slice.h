@@ -63,7 +63,7 @@ public:
   auto operator[](usize idx) noexcept -> T& { return *getPtrMut(idx); }
 
   /// Returns the slice as a `U*`.
-  template <class U> auto as() -> U* {
+  template <class U> auto as() noexcept -> U* {
     return reinterpret_cast<U*>(this->_ptr);
   }
 
