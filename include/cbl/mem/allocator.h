@@ -158,7 +158,7 @@ public:
   template <class T> auto create() noexcept -> T* {
     Layout    layout = Layout::init<T>();
     Slice<u8> mem    = this->allocateZeroed(layout);
-    return reinterpret_cast<T*>(mem.ptr());
+    return mem.as<T>();
   }
 
   /// Dellocates memory allocated by `Allocator::create`.
@@ -183,7 +183,7 @@ public:
   template <class T> auto createArray(usize len) noexcept -> Slice<T> {
     Layout    layout = Layout::array<T>(len);
     Slice<u8> mem    = this->allocateZeroed(layout);
-    T*        ptr    = reinterpret_cast<T*>(mem.ptr());
+    T*        ptr    = mem.as<T>();
     return Slice<T>{ptr, len};
   }
 

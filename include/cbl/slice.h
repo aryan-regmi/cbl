@@ -60,6 +60,9 @@ public:
   /// Returns a reference to the value at `idx`.
   auto operator[](usize idx) noexcept -> T& { return *getPtrMut(idx); }
 
+  /// Returns the slice as a `U*`.
+  template <class U> auto as() -> U* { return static_cast<U*>(this->_ptr); }
+
 private:
   T*    _ptr = 0;
   usize _len = 0;
