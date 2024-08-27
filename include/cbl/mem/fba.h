@@ -2,8 +2,8 @@
 #define CBL_MEM_FBA_H
 
 #include "cbl/mem/allocator.h" // Allocator
-#include "cbl/primitives.h"
-#include "cbl/slice.h"
+#include "cbl/primitives.h"    // usize
+#include "cbl/slice.h"         // Slice
 
 namespace cbl::mem {
 

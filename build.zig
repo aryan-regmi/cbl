@@ -96,6 +96,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     lib_tests.addIncludePath(b.path("include"));
+    lib_tests.root_module.addCMacro("CBL_ASSERT_ON", "");
     const flags = try debugFlags(b.allocator, null);
     lib_tests.addCSourceFile(.{
         .file = b.path("tests/runner.cpp"),

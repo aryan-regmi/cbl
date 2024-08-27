@@ -1,8 +1,8 @@
 #include "cbl/mem/fba.h"
 
+#include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // u8
 #include "cbl/slice.h"      // Slice
-#include <cassert>          // assert
 #include <cstdint>          // uintptr_t
 
 namespace cbl::mem {
@@ -11,7 +11,9 @@ FixedBufferAllocator::FixedBufferAllocator(Slice<u8> buf) noexcept
     : _pos{0}, _buf{buf} {}
 
 auto FixedBufferAllocator::allocate(Layout layout) noexcept -> Slice<u8> {
-  assert(layout.size() + layout.alignment() <= this->_buf.len() - this->_pos);
+  CBL_ASSERT(
+      layout.size() + layout.alignment() <= this->_buf.len() - this->_pos,
+      "Not enough memory in the `FixedBufferAllocator` for the allocation");
   u8* mem = this->_buf.ptr() + this->_pos + layout.size() + layout.alignment();
 
   // Align allocation
@@ -25,7 +27,7 @@ auto FixedBufferAllocator::allocate(Layout layout) noexcept -> Slice<u8> {
 }
 
 auto FixedBufferAllocator::deallocate(u8* ptr, Layout layout) noexcept -> void {
-  assert(ownsPtr(ptr));
+  CBL_ASSERT(ownsPtr(ptr), "`ptr` was not allocated by this allocator");
   this->_pos -= layout.size() + layout.alignment();
 }
 

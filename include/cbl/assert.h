@@ -11,7 +11,7 @@ auto cbl_assert(bool expr, const_cstr msg,
     -> void;
 
 // clang-format off
-#ifndef CBL_ASSERT_ON
+#ifdef CBL_ASSERT_ON
   #define CBL_ASSERT(expr, msg) ::cbl::cbl_assert(expr, msg)
 #else
   #define CBL_ASSERT(expr, msg)

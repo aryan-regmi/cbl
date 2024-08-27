@@ -1,11 +1,14 @@
 #include "cbl/mem/layout.h"
-#include <cassert>
+
+#include "cbl/assert.h"     // CBL_ASSERT
+#include "cbl/primitives.h" // usize, u16
 
 namespace cbl::mem {
 
 Layout::Layout(usize size, u16 alignment) noexcept
     : _size{size}, _alignment{alignment} {
-  assert(isPowerOf2(alignment));
+  CBL_ASSERT(isPowerOf2(alignment),
+             "Type `T` must have an alignment that is a power of 2");
 }
 
 auto Layout::size() const noexcept -> usize { return this->_size; }

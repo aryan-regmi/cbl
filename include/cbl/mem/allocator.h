@@ -4,7 +4,6 @@
 #include "cbl/mem/layout.h" // Layout
 #include "cbl/primitives.h" // u8, usize
 #include "cbl/slice.h"      // Slice
-#include <cassert>          // assert
 
 namespace cbl::mem {
 
@@ -168,8 +167,9 @@ public:
   /// Calls function `deallocate`, so it must abide by its safety
   /// considerations.
   template <class T> auto destroy(T* ptr) noexcept -> void {
-    assert(ptr != nullptr);
-    this->deallocate(reinterpret_cast<u8*>(ptr), Layout::init<T>());
+    if (ptr != nullptr) {
+      this->deallocate(reinterpret_cast<u8*>(ptr), Layout::init<T>());
+    }
   }
 
   /// Allocates memory for an array with `len` elements of type `T`.

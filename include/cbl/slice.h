@@ -1,8 +1,8 @@
 #ifndef CBL_SLICE_H
 #define CBL_SLICE_H
 
+#include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // usize
-#include <cassert>
 
 namespace cbl {
 
@@ -40,7 +40,7 @@ public:
   ///
   /// The `idx` must be less than the slice's length.
   auto getPtr(usize idx) const noexcept -> const T* {
-    assert(idx < this->_len);
+    CBL_ASSERT(idx < this->_len, "The index is outside the slice's bounds");
     return reinterpret_cast<T*>(reinterpret_cast<u8*>(this->_ptr) +
                                 (idx * sizeof(T)));
   }
@@ -51,7 +51,7 @@ public:
   ///
   /// The `idx` must be less than the slice's length.
   auto getPtrMut(usize idx) noexcept -> T* {
-    assert(idx < this->_len);
+    CBL_ASSERT(idx < this->_len, "The index is outside the slice's bounds");
     return reinterpret_cast<T*>(reinterpret_cast<u8*>(this->_ptr) +
                                 (idx * sizeof(T)));
   }

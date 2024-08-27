@@ -1,8 +1,8 @@
 #include "cbl/mem/allocator.h"
 
+#include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // u8
 #include "cbl/slice.h"      // Slice
-#include <cassert>          // assert
 #include <cstring>          // memset
 
 namespace cbl::mem {
@@ -13,14 +13,16 @@ auto Allocator::allocateZeroed(Layout layout) noexcept -> Slice<u8> {
     return Slice<u8>{};
   }
   void* zeroed = std::memset(mem.ptr(), 0, layout.size());
-  assert(zeroed != nullptr);
+  CBL_ASSERT(zeroed != nullptr, "`memset` returned null");
   return Slice<u8>{mem.ptr(), layout.size()};
 }
 
 auto Allocator::grow(u8* ptr, Layout old_layout,
                      Layout new_layout) noexcept -> Slice<u8> {
-  assert(ptr != nullptr);
-  assert(new_layout.size() >= old_layout.size());
+  CBL_ASSERT(ptr != nullptr, "`ptr` must not be null");
+  CBL_ASSERT(new_layout.size() >= old_layout.size(),
+             "`new_layout.size()` must be greater than or equal to "
+             "`old_layout.size()`");
 
   // Allocate new memory
   Slice<u8> new_mem = this->allocate(new_layout);
@@ -41,8 +43,10 @@ auto Allocator::grow(u8* ptr, Layout old_layout,
 
 auto Allocator::growZeroed(u8* ptr, Layout old_layout,
                            Layout new_layout) noexcept -> Slice<u8> {
-  assert(ptr != nullptr);
-  assert(new_layout.size() >= old_layout.size());
+  CBL_ASSERT(ptr != nullptr, "`ptr` must not be null");
+  CBL_ASSERT(new_layout.size() >= old_layout.size(),
+             "`new_layout.size()` must be greater than or equal to "
+             "`old_layout.size()`");
 
   // Allocate new memory
   Slice<u8> new_mem = this->allocateZeroed(new_layout);
@@ -63,8 +67,10 @@ auto Allocator::growZeroed(u8* ptr, Layout old_layout,
 
 auto Allocator::shrink(u8* ptr, Layout old_layout,
                        Layout new_layout) noexcept -> Slice<u8> {
-  assert(ptr != nullptr);
-  assert(new_layout.size() <= old_layout.size());
+  CBL_ASSERT(ptr != nullptr, "`ptr` must not be null");
+  CBL_ASSERT(
+      new_layout.size() <= old_layout.size(),
+      "`new_layout.size()` must be less than or equal to `old_layout.size()`");
 
   // Allocate new memory
   Slice<u8> new_mem = this->allocateZeroed(new_layout);

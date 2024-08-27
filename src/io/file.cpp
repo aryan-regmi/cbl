@@ -1,7 +1,7 @@
 #include "cbl/io/file.h"
 
+#include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // usize, const_cstr
-#include <cassert>          // assert
 #include <cstdio>           // FILE, stdout, stderr, stdin, fwrite, vfprintf
 #include <unistd.h>         // dup
 
@@ -11,7 +11,7 @@ File::File(std::FILE* file) noexcept : _file{file} {}
 
 File::File(const_cstr filename, Mode mode) noexcept {
   std::FILE* file = std::fopen(filename, getFileMode(mode));
-  assert(file != nullptr);
+  CBL_ASSERT(file != nullptr, "Failed to open the file");
   this->_file = file;
   this->_mode = mode;
 }
@@ -20,19 +20,21 @@ File::~File() noexcept {
   if ((this->_file != stdout) && (this->_file != stderr) &&
       (this->_file != stdin)) {
     int closed = std::fclose(this->_file);
-    assert((closed == 0) || (closed == EOF));
+    CBL_ASSERT((closed == 0) || (closed == EOF), "Failed to close the file");
   }
 }
 
 [[nodiscard]] auto File::write(Slice<u8> buf) noexcept -> usize {
-  assert(!buf.isEmpty());
-  return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), this->_file);
+  if (!buf.isEmpty()) {
+    return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), this->_file);
+  }
+  return 0;
 }
 
 auto File::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
-  assert(fmt != nullptr);
+  CBL_ASSERT(fmt != nullptr, "The format string must not be null");
   usize written = std::vfprintf(this->_file, fmt, args);
-  assert(written != 0);
+  CBL_ASSERT(written != 0, "Failed to write to file");
 }
 
 auto File::file() const noexcept -> std::FILE* { return this->_file; }
@@ -62,25 +64,29 @@ auto File::getFileMode(Mode mode) -> const_cstr {
 }
 
 [[nodiscard]] auto Stdout::write(Slice<u8> buf) noexcept -> usize {
-  assert(!buf.isEmpty());
-  return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stdout);
+  if (!buf.isEmpty()) {
+    return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stdout);
+  }
+  return 0;
 }
 
 auto Stdout::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
-  assert(fmt != nullptr);
+  CBL_ASSERT(fmt != nullptr, "The format string must not be null");
   usize written = std::vfprintf(stdout, fmt, args);
-  assert(written != 0);
+  CBL_ASSERT(written != 0, "Failed to write to stdout");
 }
 
 [[nodiscard]] auto Stderr::write(Slice<u8> buf) noexcept -> usize {
-  assert(!buf.isEmpty());
-  return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stderr);
+  if (!buf.isEmpty()) {
+    return std::fwrite(buf.ptr(), sizeof(u8), buf.len(), stderr);
+  }
+  return 0;
 }
 
 auto Stderr::formatV(const_cstr fmt, std::va_list args) noexcept -> void {
-  assert(fmt != nullptr);
+  CBL_ASSERT(fmt != nullptr, "The format string must not be null");
   usize written = std::vfprintf(stderr, fmt, args);
-  assert(written != 0);
+  CBL_ASSERT(written != 0, "Failed to write to stdout");
 }
 
 } // namespace cbl::io

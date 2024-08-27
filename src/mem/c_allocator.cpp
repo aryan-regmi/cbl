@@ -1,9 +1,8 @@
 #include "cbl/mem/c_allocator.h"
-#include "cbl/primitives.h"
 
-#include <cassert> // assert
-#include <cstdint> // uintptr_t
-#include <cstdlib> // malloc, free
+#include "cbl/primitives.h" // u8, u16
+#include <cstdint>          // uintptr_t
+#include <cstdlib>          // malloc, free
 
 namespace cbl::mem {
 
@@ -28,10 +27,11 @@ Slice<u8> CAllocator::allocate(Layout layout) noexcept {
 }
 
 void CAllocator::deallocate(u8* ptr, Layout layout) noexcept {
-  assert(ptr != nullptr);
-  u16* offset  = reinterpret_cast<u16*>(ptr - layout.alignment());
-  u8*  alloced = ptr - *offset;
-  std::free(alloced);
+  if (ptr != nullptr) {
+    u16* offset  = reinterpret_cast<u16*>(ptr - layout.alignment());
+    u8*  alloced = ptr - *offset;
+    std::free(alloced);
+  }
 }
 
 } // namespace cbl::mem

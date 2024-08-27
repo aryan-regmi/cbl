@@ -1,8 +1,8 @@
 #ifndef CBL_MEM_LAYOUT_H
 #define CBL_MEM_LAYOUT_H
 
+#include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // usize, u16
-#include <cassert>          // assert
 #include <stdckdint.h>      // ckd_mul
 
 namespace cbl::mem {
@@ -27,16 +27,18 @@ public:
 
   /// Creates a memory layout suitable for holding a value of type `T`.
   template <class T> static auto init() noexcept -> Layout {
-    assert(isPowerOf2(alignof(T)));
+    CBL_ASSERT(isPowerOf2(alignof(T)),
+               "Type `T` must have an alignment that is a power of 2");
     return Layout{sizeof(T), alignof(T)};
   }
 
   /// Creates a memory layout for an array with `len` elements of type `T`.
   template <class T> static auto array(usize len) noexcept -> Layout {
-    assert(isPowerOf2(alignof(T)));
+    CBL_ASSERT(isPowerOf2(alignof(T)),
+               "Type `T` must have an alignment that is a power of 2");
     usize final_size;
     bool  invalid = ckd_mul(&final_size, sizeof(T), len);
-    assert(invalid == false);
+    CBL_ASSERT(invalid == false, "Multiplication overflowed");
     return Layout{final_size, alignof(T)};
   }
 
@@ -46,8 +48,9 @@ public:
   ///
   /// `value` must be a single item pointer and must not be `nullptr`.
   template <class T> static auto fromValue(T* value) noexcept -> Layout {
-    assert(value != nullptr);
-    assert(isPowerOf2(alignof(T)));
+    CBL_ASSERT(value != nullptr, "`value` must not be null");
+    CBL_ASSERT(isPowerOf2(alignof(T)),
+               "Type `T` must have an alignment that is a power of 2");
     return Layout{sizeof(T), alignof(T)};
   }
 
@@ -58,11 +61,12 @@ public:
   /// `arr` must be a multi-item pointer and must not be `nullptr`.
   template <class T>
   static auto fromArray(T* arr, usize len) noexcept -> Layout {
-    assert(arr != nullptr);
-    assert(isPowerOf2(alignof(T)));
+    CBL_ASSERT(arr != nullptr, "`arr` must not be null");
+    CBL_ASSERT(isPowerOf2(alignof(T)),
+               "Type `T` must have an alignment that is a power of 2");
     usize final_size;
     bool  invalid = ckd_mul(&final_size, sizeof(T), len);
-    assert(invalid == false);
+    CBL_ASSERT(invalid == false, "Multiplication overflowed");
     return Layout{final_size, alignof(T)};
   }
 
