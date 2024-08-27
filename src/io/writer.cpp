@@ -3,6 +3,7 @@
 #include "cbl/assert.h"     // CBL_ASSERT
 #include "cbl/primitives.h" // usize
 #include <cstdarg>          // va_list, va_start, va_end
+#include <stdckdint.h>      // ckd_add
 
 namespace cbl::io {
 
@@ -18,8 +19,14 @@ auto Writer::writeAll(Slice<u8> buf) noexcept -> void {
   if (!buf.isEmpty()) {
     usize idx = 0;
     while (idx != buf.len()) {
-      idx += this->write(buf);
-      buf  = Slice{buf.ptr() + idx, buf.len()};
+      usize written = this->write(buf);
+
+      usize final_idx;
+      bool  invalid = ckd_add(&final_idx, idx, written);
+      CBL_ASSERT(invalid == false, "Addition overflowed");
+      idx = final_idx;
+
+      buf = Slice{buf.ptr() + final_idx, buf.len()};
     }
   }
 }
