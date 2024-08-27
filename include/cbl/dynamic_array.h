@@ -73,7 +73,9 @@ public:
   auto toOwnedSlice(mem::Allocator& allocator) noexcept -> Slice<T> {
     const usize len     = this->len;
     T*          new_mem = allocator.createArray<T>(len);
-    void*       copied  = std::memcpy(new_mem, this->_elems, sizeof(T) * len);
+    void*       copied =
+        std::memcpy(new_mem, this->_elems,
+                    sizeof(T) * len); // TODO: Replace with loop instead?
     CBL_ASSERT(copied != nullptr, "`memcpy` failed");
     this->deinit(allocator);
     return Slice<T>{new_mem, len};
@@ -131,8 +133,6 @@ public:
       resize();
     }
 
-    // TODO: Replace with memmove?
-    //
     // Shift all elements from the idx to the right
     for (usize i = this->_len; i > idx; i--) {
       this->_elems[i] = this->_elems[i - 1];
@@ -146,6 +146,9 @@ public:
   /// Insert `slice` at the specified index.
   ///
   /// Shifts all elements from `idx` to the right.
+  ///
+  /// If `idx` is equal to the length of the array, this is equivalent to
+  /// `appendSlice`.
   ///
   /// This operation is O(N).
   ///
@@ -204,9 +207,31 @@ private:
   usize _len   = 0;
   usize _cap   = 0;
 
-  auto  resize() -> void {
-    // TODO: Impl!
-    //  - handle initial insert (when _elems == nullptr and _len & _cap are 0)
+  /// Resizes the array by doubling its capacity.
+  ///
+  /// # Safety
+  ///
+  /// This will invalidate all pointers to elements.
+  auto  resize(mem::Allocator& allocator) -> void {
+    usize cap = this->_cap;
+    if ((this->_elems == nullptr) && (this->_len == 0) && (this->_cap == 0)) {
+      cap = 1;
+    } else {
+      cap *= 2;
+    }
+
+    T* resized = allocator.createArray<T>(cap);
+    CBL_ASSERT(resized != nullptr, "Resize failed (out of memory)");
+
+    // Copy and delete old data
+    const usize len    = this->_len;
+    void*       copied = std::memcpy(resized, this->_elems, sizeof(T) * len);
+    CBL_ASSERT(copied != nullptr, "`memcpy` failed");
+    this->deinit(allocator);
+
+    this->_elems = resized;
+    this->_len   = len;
+    this->_cap   = cap;
   }
 };
 
