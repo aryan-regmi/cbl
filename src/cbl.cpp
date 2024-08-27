@@ -1,5 +1,7 @@
 // TODO: Add UnmanagedDynamicArray and DynamicArray
-//
+
+// TODO: Slice functions should factor in ownership!!
+
 // TODO: Add UnmanagedMap and Map
 
 // TODO: Add Iterator interface?
