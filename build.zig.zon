@@ -10,7 +10,7 @@
         "src",
         "include",
         "tests",
+        "README.md",
         //"LICENSE",
-        //"README.md",
     },
 }
