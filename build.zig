@@ -2,6 +2,7 @@ const std = @import("std");
 const genCompileCommands = @import("build/gen_compile_commands.zig").genCompileCommandsFile;
 
 pub const source_files = [_][]const u8{
+    "src/assert.cpp",
     "src/io/writer.cpp",
     "src/mem/allocator.cpp",
     "src/mem/c_allocator.cpp",
@@ -58,10 +59,10 @@ pub fn build(b: *std.Build) !void {
     });
     lib.addIncludePath(b.path("include"));
 
-    // // Define debug macros
-    // if (optimize == .Debug) {
-    //     lib.root_module.addCMacro("CBL_DEBUG_MODE", "");
-    // }
+    // Define debug macros
+    if (optimize == .Debug) {
+        lib.root_module.addCMacro("CBL_ASSERT_ON", "");
+    }
 
     const filenames = try getSourceFileNames(b.allocator, &source_files);
     for (source_files, 0..) |file, i| {
