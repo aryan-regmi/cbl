@@ -12,6 +12,7 @@
 // TODO: Add Debug interface?
 
 // TODO: Add FixedBufferAllocator and ArenaAllocator
+//  - Possibly remove nullptr assertions in `deallocate` methods
 //
 // TODO: Add ThreadSafeAllocator (or add `threadSafeAllocate` to all allocators)
 

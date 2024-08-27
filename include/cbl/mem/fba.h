@@ -7,16 +7,18 @@
 
 namespace cbl::mem {
 
-struct Fba : public Allocator {
-  explicit Fba() noexcept             = delete;
-  Fba(Fba&&) noexcept                 = default;
-  Fba(const Fba&) noexcept            = delete;
-  Fba& operator=(Fba&&) noexcept      = default;
-  Fba& operator=(const Fba&) noexcept = delete;
-  ~Fba() noexcept                     = default;
+struct FixedBufferAllocator : public Allocator {
+  explicit FixedBufferAllocator() noexcept                         = delete;
+  FixedBufferAllocator(FixedBufferAllocator&&) noexcept            = default;
+  FixedBufferAllocator(const FixedBufferAllocator&) noexcept       = delete;
+  FixedBufferAllocator& operator=(FixedBufferAllocator&&) noexcept = default;
+  FixedBufferAllocator&
+  operator=(const FixedBufferAllocator&) noexcept = delete;
+  ~FixedBufferAllocator() noexcept                = default;
 
 public:
-  explicit Fba(Slice<u8> buf) noexcept;
+  /// Initialize `FixedBufferAllocator` from a buffer.
+  explicit FixedBufferAllocator(Slice<u8> buf) noexcept;
 
   /// Allocates memory in the buffer.
   auto allocate(Layout layout) noexcept -> Slice<u8> override;
@@ -24,8 +26,11 @@ public:
   /// Allocates memory from the buffer.
   auto deallocate(u8* ptr, Layout layout) noexcept -> void override;
 
+  /// Resets the allocator.
+  auto reset() noexcept -> void;
+
   /// Returns `true` if `ptr` was allocated by `this`.
-  auto ownsPtr(u8* ptr) const noexcept -> bool;
+  auto ownsPtr(const u8* ptr) const noexcept -> bool;
 
   /// Returns `true` if `slice` was allocated by `this`.
   auto ownsSlice(Slice<u8> slice) const noexcept -> bool;
