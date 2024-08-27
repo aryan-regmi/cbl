@@ -5,6 +5,7 @@ pub const source_files = [_][]const u8{
     "src/io/writer.cpp",
     "src/mem/allocator.cpp",
     "src/mem/c_allocator.cpp",
+    "src/mem/fba.cpp",
     "src/mem/layout.cpp",
 };
 
@@ -21,6 +22,7 @@ fn debugFlags(allocator: std.mem.Allocator, extra_opts: ?[]const []const u8) !st
     try flags.append("-Wwrite-strings");
     try flags.append("-Wno-missing-field-initializers");
     try flags.append("-Wno-bit-int-extension");
+    try flags.append("-g");
     try flags.append("-fsanitize=undefined");
     if (extra_opts != null) {
         for (extra_opts.?) |opt| {

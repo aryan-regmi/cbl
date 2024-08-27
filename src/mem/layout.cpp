@@ -1,9 +1,12 @@
 #include "cbl/mem/layout.h"
+#include <cassert>
 
 namespace cbl::mem {
 
 Layout::Layout(usize size, u16 alignment) noexcept
-    : _size{size}, _alignment{alignment} {}
+    : _size{size}, _alignment{alignment} {
+  assert(isPowerOf2(alignment));
+}
 
 auto Layout::size() const noexcept -> usize { return this->_size; }
 

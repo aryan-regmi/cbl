@@ -4,7 +4,10 @@ int main() {
   using namespace cbl_tests;
 
   // Allocator tests
-  { allocatorTests(); }
+  {
+    allocatorTests();
+    fbaTests();
+  }
 
   return 0;
 }

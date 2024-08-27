@@ -3,6 +3,8 @@
 //  - Has separate macro that can determines if it is compiled out
 //      - Always defined in debug mode
 
+// TODO: Replace all arithmetic with checked variants
+
 // TODO: Add UnmanagedDynamicArray and DynamicArray
 //
 // TODO: Add UnmanagedMap and Map
@@ -11,7 +13,7 @@
 //
 // TODO: Add Debug interface?
 
-// TODO: Add FixedBufferAllocator and ArenaAllocator
+// TODO: Add ArenaAllocator
 //  - Possibly remove nullptr assertions in `deallocate` methods
 //
 // TODO: Add ThreadSafeAllocator (or add `threadSafeAllocate` to all allocators)
