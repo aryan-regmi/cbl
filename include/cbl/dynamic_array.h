@@ -130,7 +130,7 @@ public:
 
     // Resize original buffer if necessary
     if (this->_len + 1 > this->_cap) {
-      resize();
+      resize(allocator);
     }
 
     // Shift all elements from the idx to the right
@@ -157,8 +157,30 @@ public:
   /// * Invalidates pre-existing pointers to elements at and after `index`.
   /// * Invalidates all pre-existing element pointers if capacity must be
   ///   increased to accommodate the new elements.
-  auto insertSlice(mem::Allocator allocator, Slice<T> slice,
-                   usize idx) noexcept -> void;
+  auto insertSlice(mem::Allocator& allocator, Slice<T> slice,
+                   usize idx) noexcept -> void {
+    if (idx == this->_len) {
+      this->appendSlice(allocator, slice);
+      return;
+    }
+
+    // Resize the original buffer if necessary
+    while (this->_len + slice.len() > this->_cap) {
+      resize(allocator);
+    }
+
+    // Shift all elements from the idx to the right, leaving enough space for
+    // the slice elements
+    for (usize i = this->_len + slice.len() - 1; i > idx; i--) {
+      this->_elems[i] = this->_elems[i - slice.len()];
+    }
+
+    // Insert slice at `idx`
+    for (usize i = idx; i < slice.len(); i++) {
+      this->_elems[i] = slice[i - idx];
+    }
+    this->_len += slice.len();
+  }
 
   /// Inserts `value` to the end of the array.
   ///
