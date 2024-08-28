@@ -189,7 +189,15 @@ public:
   /// # Safety
   ///
   /// Invalidates element pointers if additional memory is needed.
-  auto append(mem::Allocator allocator, T value) noexcept -> void;
+  auto append(mem::Allocator& allocator, T value) noexcept -> void {
+    // Resize original buffer if necessary
+    if (this->_len + 1 > this->_cap) {
+      resize(allocator);
+    }
+
+    this->_elems[this->_len]  = value;
+    this->_len               += 1;
+  }
 
   /// Inserts `slice` to the end of the array.
   ///
@@ -198,9 +206,21 @@ public:
   /// # Safety
   ///
   /// Invalidates element pointers if additional memory is needed.
-  auto appendSlice(mem::Allocator allocator, Slice<T> slice) noexcept -> void;
+  auto appendSlice(mem::Allocator& allocator, Slice<T> slice) noexcept -> void {
+    // Resize original buffer if necessary
+    while (this->_len + slice.len() > this->_cap) {
+      resize(allocator);
+    }
+
+    for (usize i = 0; i < slice.len(); i++) {
+      this->_elems[this->_len + i] = slice[i];
+    }
+    this->_len += slice.len();
+  }
 
   /// Removes and returns the element at `idx`.
+  ///
+  /// Shifts all elements from `idx` to the left.
   ///
   /// This operation is O(N).
   ///
@@ -236,7 +256,7 @@ private:
   /// This will invalidate all pointers to elements.
   auto  resize(mem::Allocator& allocator) -> void {
     usize cap = this->_cap;
-    if ((this->_elems == nullptr) && (this->_len == 0) && (this->_cap == 0)) {
+    if (this->_cap == 0) {
       cap = 1;
     } else {
       cap *= 2;
